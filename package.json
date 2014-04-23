@@ -1,0 +1,37 @@
+{
+  "name": "ast-util",
+  "version": "0.0.0",
+  "description": "Utilities for AST transformers.",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/square/ast-util.git"
+  },
+  "keywords": [
+    "ast",
+    "transform",
+    "esnext",
+    "es6",
+    "macros"
+  ],
+  "author": "Square, Inc.",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/square/ast-util/issues"
+  },
+  "homepage": "https://github.com/square/ast-util",
+  "devDependencies": {
+    "mocha": "^1.18.2",
+    "recast": "^0.5.16"
+  },
+  "dependencies": {
+    "ast-types": "git://github.com/eventualbuddha/ast-types#fix-prepending-nodes-to-array",
+    "private": "^0.1.3"
+  }
+}
