@@ -3,6 +3,7 @@
 var util = require('../lib');
 
 var recast = require('recast');
+var esprima = require('esprima');
 var types = recast.types;
 var n = types.namedTypes;
 var b = types.builders;
@@ -10,12 +11,16 @@ var NodePath = types.NodePath;
 
 var assert = require('assert');
 
+function parse(source) {
+  return recast.parse(source, { esprima: esprima });
+}
+
 function normalize(source) {
-  return recast.prettyPrint(recast.parse(source)).code;
+  return recast.prettyPrint(parse(source)).code;
 }
 
 function processIt(source, callback) {
-  var ast = recast.parse(source);
+  var ast = parse(source);
   types.traverse(ast, function(node) {
     if (n.Identifier.check(node) && node.name === 'IT') {
       callback.call(this, node);
@@ -95,7 +100,7 @@ describe('#uniqueIdentifier', function() {
 
 describe('#isUsed', function() {
   function check(source, names, expected) {
-    var ast = recast.parse(source).program;
+    var ast = parse(source).program;
     var rootPath = new NodePath({ root: ast });
     var globalScope = rootPath.get('root').scope;
 
@@ -192,12 +197,20 @@ describe('#isReference', function() {
   });
 
   it('can check names', function() {
-    types.traverse(recast.parse('a'), function(node) {
+    types.traverse(parse('a'), function(node) {
       if (n.Identifier.check(node)) {
         assert.ok(util.isReference(this, 'a'));
         assert.ok(!util.isReference(this, 'b'));
       }
     });
+  });
+
+  it('is false for method definition identifiers', function() {
+    check('class Foo { IT(){} }', false);
+  });
+
+  it('is false for function definition identifiers', function() {
+    check('function IT(){}', false);
   });
 });
 
@@ -251,7 +264,7 @@ describe('#injectVariable', function() {
   });
 
   it('can inject a variable in a scope at a position that is later replaced', function() {
-    var ast = recast.parse('var a;');
+    var ast = parse('var a;');
 
     types.traverse(ast, function(node) {
       if (n.VariableDeclaration.check(node)) {
@@ -438,7 +451,7 @@ describe('#callFunctionBind', function() {
 describe('#getGlobals', function() {
   function check(source, globals) {
     assert.deepEqual(
-      util.getGlobals(recast.parse(source).program).map(function(identifier) {
+      util.getGlobals(parse(source).program).map(function(identifier) {
         return identifier.name;
       }),
       globals

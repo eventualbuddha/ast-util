@@ -28,7 +28,8 @@
   "homepage": "https://github.com/square/ast-util",
   "devDependencies": {
     "mocha": "^1.18.2",
-    "recast": "^0.5.16"
+    "recast": "^0.5.16",
+    "esprima": "git://github.com/ariya/esprima.git#harmony"
   },
   "dependencies": {
     "ast-types": "^0.3.26",
