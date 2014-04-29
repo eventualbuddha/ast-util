@@ -31,7 +31,7 @@
     "recast": "^0.5.16"
   },
   "dependencies": {
-    "ast-types": "git://github.com/eventualbuddha/ast-types#fix-prepending-nodes-to-array",
+    "ast-types": "^0.3.26",
     "private": "^0.1.3"
   }
 }
