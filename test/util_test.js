@@ -212,6 +212,21 @@ describe('#isReference', function() {
   it('is false for function definition identifiers', function() {
     check('function IT(){}', false);
   });
+
+  it('is true for superclass identifiers', function() {
+    check('class Foo extends IT {}', true);
+  });
+
+  it('is false for name of import specifiers', function() {
+    check('import IT from "IT";', false);
+    check('import { IT } from "IT";', false);
+    check('import { foo as IT } from "IT";', false);
+    check('import { IT as foo } from "IT";', false);
+  });
+
+  it('is true for export default', function() {
+    check('export default IT;', true);
+  });
 });
 
 describe('#injectVariable', function() {
