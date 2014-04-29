@@ -205,6 +205,11 @@ describe('#isReference', function() {
     });
   });
 
+  it('is false for class names', function() {
+    check('class IT {}', false);
+    check('var foo = class IT {};', false);
+  });
+
   it('is false for method definition identifiers', function() {
     check('class Foo { IT(){} }', false);
   });
