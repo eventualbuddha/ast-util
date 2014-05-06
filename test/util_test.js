@@ -189,6 +189,10 @@ describe('#isReference', function() {
     });
   });
 
+  it('is true for variable initial values', function() {
+    check('var a = IT;', true);
+  });
+
   it('is false for labeled statements', function() {
     check('IT: 1', false);
     check('IT: IT', true, function(path) {
