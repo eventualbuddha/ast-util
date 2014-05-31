@@ -472,6 +472,49 @@ describe('#callFunctionBind', function() {
   });
 });
 
+describe('#callGetIterator', function() {
+  it('calls the get iterator helper', function() {
+    var ast = processIt('IT;', function(node) {
+      this.replace(util.callGetIterator(
+        this.scope, node
+      ));
+    });
+
+    sameSource(
+      ast,
+      'var $__getIterator = function(iterable) {' +
+      '    var sym = typeof Symbol === "function" && Symbol.iterator || "@@iterator";' +
+      '    if (typeof iterable[sym] === "function") {' +
+      '        return iterable[sym]();' +
+      '    } else if (typeof iterable === "object" || typeof iterable === "function") {' +
+      '        return $__arrayIterator(iterable);' +
+      '    } else {' +
+      '        throw new TypeError();' +
+      '    }' +
+      '};' +
+      'var $__arrayIterator = function(array) {' +
+      '    var index = 0;' +
+      '    return {' +
+      '        next: function() {' +
+      '            if (index >= array.length) {' +
+      '                return {' +
+      '                    done: true,' +
+      '                    value: void 0' +
+      '                };' +
+      '            } else {' +
+      '                return {' +
+      '                    done: false,' +
+      '                    value: array[index++]' +
+      '                };' +
+      '            }' +
+      '        }' +
+      '    };' +
+      '};' +
+      '$__getIterator(IT);'
+    );
+  });
+});
+
 describe('#getGlobals', function() {
   function check(source, globals) {
     assert.deepEqual(
