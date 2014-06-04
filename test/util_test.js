@@ -164,6 +164,14 @@ describe('#isReference', function() {
     check('IT.foo', true);
   });
 
+  it('is true for computed member expressions', function() {
+    check('foo[IT];', true);
+  });
+
+  it('is false for non-computed member expressions', function() {
+    check('foo.IT;', false);
+  });
+
   it('is false for function parameters', function() {
     check('(function(IT){})', false);
   });
