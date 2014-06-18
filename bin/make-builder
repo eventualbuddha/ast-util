@@ -1,0 +1,321 @@
+#!/usr/bin/env node
+
+/* jshint node:true, unused:true, undef:true */
+
+var recast = require('recast');
+var types = recast.types;
+var b = types.builders;
+var n = types.namedTypes;
+var assert = require('assert');
+var vm = require('vm');
+
+var BUILD_PARAMS_CACHE = {
+  'ThisExpression': []
+};
+
+/**
+ * Get the named parameters to pass the named builder.
+ *
+ * @param {!string} type
+ * @return {[string]}
+ */
+function buildParamsForType(type) {
+  var entry = BUILD_PARAMS_CACHE[type];
+  if (entry) {
+    return entry;
+  }
+
+  try {
+    b[builderNameForType(type)]();
+    assert.ok(false, 'should have failed to build ' + type + ' with no params');
+  } catch (ex) {
+    var message = ex.message;
+    var typeIndex = message.indexOf(type);
+    var openParenIndex = message.indexOf('(', typeIndex);
+    var closeParenIndex = message.indexOf(')', openParenIndex);
+
+    assert.ok(
+      closeParenIndex >= 0,
+      'unexpected exception format trying to parse build params: ' + message
+    );
+
+    var paramsList = message.slice(openParenIndex, closeParenIndex);
+    var result = [];
+    paramsList.replace(/"([^"]+)"/g, function(_, name) {
+      result.push(name);
+    });
+    BUILD_PARAMS_CACHE[type] = result;
+    return result;
+  }
+}
+
+/**
+ * Get the name of the builder given a node type. For example, "ThisExpression"
+ * becomes "thisExpression".
+ *
+ * @param {!string} type
+ * @return {!string}
+ */
+function builderNameForType(type) {
+  return type[0].toLowerCase() + type.slice(1);
+}
+
+/**
+ * Read all the contents of STDIN and call back with it.
+ *
+ * @param {function(!string)} callback
+ */
+function readStdin(callback) {
+  var stdin = '';
+
+  process.stdin.setEncoding('utf8');
+
+  process.stdin.on('readable', function() {
+    var chunk = process.stdin.read();
+    if (chunk !== null) {
+      stdin += chunk;
+    }
+  });
+
+  process.stdin.on('end', function() {
+    callback(stdin);
+  });
+}
+
+/**
+ * Makes the AST for a JavaScript program that will build the given node using
+ * the builder functions from the ast-types package.
+ *
+ * @param {ast-types.Node} node
+ * @param {{string: string}} replacements
+ * @return {ast-types.Node}
+ */
+function makeBuilder(node, replacements) {
+  if (n.File.check(node)) {
+    return b.expressionStatement(makeBuilder(node.program, replacements));
+  } else if (n.Program.check(node)) {
+    return b.callExpression(
+      b.memberExpression(
+        b.identifier('b'),
+        b.identifier('program'),
+        false
+      ),
+      [b.arrayExpression(node.body.map(function(statement) {
+        return makeBuilder(statement, replacements);
+      }))]
+    );
+  } else if (Array.isArray(node)) {
+    return b.arrayExpression(
+      node.map(function(item) { return makeBuilder(item, replacements); })
+    );
+  } else if (node && node.constructor === RegExp) {
+    return b.literal(node);
+  }
+
+  assert.ok(
+    n.Node.check(node),
+    'unexpected node type: ' + JSON.stringify(node)
+  );
+
+  if (n.Identifier.check(node)) {
+    var replacement = replacements[node.name];
+    if (replacement) {
+      var newReplacements = Object.create(replacements);
+      newReplacements[node.name] = undefined;
+      return recast.parse(replacement).program.body[0].expression;
+    }
+  }
+
+  return b.callExpression(
+    b.memberExpression(
+      b.identifier('b'),
+      b.identifier(node.type[0].toLowerCase() + node.type.slice(1)),
+      false
+    ),
+    buildParamsForType(node.type).reduce(function(result, key) {
+      if (key !== 'type' && key !== 'loc') {
+        var value;
+        if (node[key] !== null && typeof node[key] === 'object') {
+          value = makeBuilder(node[key], replacements);
+        } else if (node[key] !== undefined) {
+          value = b.literal(node[key]);
+        }
+
+        if (value) {
+          result.push(value);
+        }
+      }
+
+      return result;
+    }, [])
+  );
+}
+
+/**
+ * Determines whether, when printed, the node should be on multiple lines.
+ *
+ * @param {ast-types.Node}
+ * @param {boolean}
+ */
+function isMultiline(node) {
+  switch (node.type) {
+    case 'ExpressionStatement':
+      return isMultiline(node.expression);
+
+    case 'CallExpression':
+      return node.arguments.length > 1 || node.arguments.some(isMultiline);
+
+    case 'MemberExpression':
+      return isMultiline(node.object) || isMultiline(node.property);
+
+    case 'Identifier':
+      return false;
+
+    case 'ArrayExpression':
+      return node.elements.length > 1 || (node.elements.length === 1 && isMultiline(node.elements[0]));
+
+    case 'Literal':
+      return (node.raw || JSON.stringify(node.value)).indexOf('\n') >= 0;
+
+    default:
+      throw new Error('unexpected node type: ' + node.type);
+  }
+}
+
+/**
+ * @const
+ */
+var INDENT = '  ';
+
+/**
+ * Prints the given list of AST nodes as JavaScript as part of a list of array
+ * elements or function arguments.
+ *
+ * @param {[ast-types.Node]} list
+ * @param {string=} indent
+ */
+function printListLines(list, indent) {
+  if (!indent) { indent = ''; }
+
+  var output = '';
+
+  list.forEach(function(item, i) {
+    output += indent + print(item, indent);
+    if (i !== list.length - 1) {
+      output += ',';
+    }
+    output += '\n';
+  });
+
+  return output;
+}
+
+/**
+ * Prints the given AST node as JavaScript, formatted so as to favor shorter
+ * lines. For example, this:
+ *
+ *   b.callExpression(b.identifier('a'), [b.literal(1), b.literal(2)]);
+ *
+ * Would be printed as:
+ *
+ *   b.callExpression(
+ *     b.identifier('a'),
+ *     [
+ *       b.literal(1),
+ *       b.literal(2)
+ *     ]
+ *   )
+ *
+ * @param {ast-types.Node} node
+ * @param {string=} indent
+ * @return {string}
+ */
+function print(node, indent) {
+  if (!indent) { indent = ''; }
+
+  switch (node.type) {
+    case 'ExpressionStatement':
+      return print(node.expression, indent) + ';';
+
+    case 'CallExpression':
+      if (isMultiline(node)) {
+        if (node.arguments.length === 1 && node.arguments[0].type === 'ArrayExpression') {
+          return print(node.callee, indent) + '([\n' +
+            printListLines(node.arguments[0].elements, indent + INDENT) +
+            indent + '])';
+        } else {
+          return print(node.callee, indent) + '(\n' +
+            printListLines(node.arguments, indent + INDENT) +
+            indent + ')';
+        }
+      }
+
+      return print(node.callee, indent) + '(' +
+        node.arguments.map(function(arg) { return print(arg, indent); }).join(', ') +
+        ')';
+
+    case 'MemberExpression':
+      if (node.computed) {
+        return print(node.object, indent) + '[' + print(node.property, indent) + ']';
+      } else {
+        return print(node.object, indent) + '.' + print(node.property, indent);
+      }
+      break;
+
+    case 'Identifier':
+      return node.name;
+
+    case 'ArrayExpression':
+      if (isMultiline(node)) {
+        return '[\n' +
+          printListLines(node.elements, indent + INDENT) +
+          indent + ']';
+      } else {
+        return '[' +
+          node.elements.map(function(element) { return print(element, indent); }).join(', ') +
+          ']';
+      }
+      break;
+
+    case 'Literal':
+      if (typeof node.value === 'string') {
+        return "'" + node.value.replace(/'/g, "\\'") + "'";
+      } else {
+        return node.raw || JSON.stringify(node.value);
+      }
+      break;
+
+    default:
+      throw new Error('unexpected node type: ' + node.type);
+  }
+}
+
+var replacements = process.argv.slice(2).reduce(function(map, arg) {
+  var parts = arg.split('=');
+  if (parts.length === 2) {
+    map[parts[0]] = parts[1];
+  }
+  return map;
+}, {});
+
+var TEST = process.argv.indexOf('--test') >= 0;
+
+readStdin(function(stdin) {
+  var inputSource = stdin;
+  var inputAST = recast.parse(inputSource);
+  var code = print(makeBuilder(inputAST.program.body[0].expression, replacements));
+
+  if (TEST) {
+    // verify the result
+    var context = { b: b };
+    vm.runInNewContext('result = ' + code, context);
+    var normalizedInputSource = recast.prettyPrint(inputAST).code;
+    var normalizedBuiltSource = recast.prettyPrint(context.result).code;
+    assert.equal(
+      normalizedBuiltSource,
+      normalizedInputSource
+    );
+  }
+
+  process.stdout.write(code);
+});

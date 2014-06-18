@@ -25,30 +25,8 @@ depending on what the value of `args` is. If `args` is an expression then
 
 <a name="callGet" href="#wiki-callGet">#</a> <b>callGet</b>(<i>scope</i>, <i>object</i>, <i>property</i>, <i>receiver</i>)
 
-The [[Get]] internal method on objects would look something like this
-implemented in pure JavaScript:
-
-```js
-function get(object, property, receiver) {
-  var desc = Object.getOwnPropertyDescriptor(object, property);
-  if (desc === void 0) {
-    var parent = Object.getPrototypeOf(object);
-    if (parent === null) {
-      return void 0;
-    } else {
-      return get(parent, property, receiver);
-    }
-  } else if ('value' in desc && 'writable' in desc) {
-    return desc.value;
-  } else {
-    var getter = desc.get;
-    if (getter === void 0) {
-      return void 0;
-    }
-    return getter.call(receiver);
-  }
-}
-```
+The [[Get]] internal method on objects would look something like
+[helpers/get.js](helpers/get.js).
 
 
 <a name="callGetOwnPropertyDescriptor" href="#wiki-callGetOwnPropertyDescriptor">#</a> <b>callGetOwnPropertyDescriptor</b>(<i>scope</i>, <i>object</i>, <i>property</i>)
@@ -239,8 +217,12 @@ $ npm install
 Then, try running the tests:
 
 ```
-$ npm test
+$ make test
 ```
+
+If you're adding or editing code that injects helpers into a scope, you'll need
+to edit and run the Makefile to have it generate the files in lib/helpers from
+the files in helpers.
 
 
 ### Pull Requests

@@ -495,12 +495,12 @@ describe('#callGetIterator', function() {
       '    if (typeof iterable[sym] === "function") {' +
       '        return iterable[sym]();' +
       '    } else if (typeof iterable === "object" || typeof iterable === "function") {' +
-      '        return $__arrayIterator(iterable);' +
+      '        return $__getArrayIterator(iterable);' +
       '    } else {' +
       '        throw new TypeError();' +
       '    }' +
       '};' +
-      'var $__arrayIterator = function(array) {' +
+      'var $__getArrayIterator = function(array) {' +
       '    var index = 0;' +
       '    return {' +
       '        next: function() {' +
