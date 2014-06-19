@@ -10,7 +10,8 @@ var assert = require('assert');
 var vm = require('vm');
 
 var BUILD_PARAMS_CACHE = {
-  'ThisExpression': []
+  'ThisExpression': [],
+  'BreakStatement': []
 };
 
 /**
