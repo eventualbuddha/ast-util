@@ -523,6 +523,44 @@ describe('#callGetIterator', function() {
   });
 });
 
+describe('#callGetIteratorRange', function() {
+  it('calls the get iterator range helper', function() {
+    var ast = processIt('IT;', function(node) {
+      this.replace(util.callGetIteratorRange(
+        this.scope, node, b.literal(1), b.literal(2), b.literal(3)
+      ));
+    });
+
+    sameSource(
+      ast,
+      'var $__getIteratorRange = function(iterator, index, begin, len) {' +
+      '    if (index > begin) {' +
+      '        throw new RangeError();' +
+      '    }' +
+      '    if (typeof len === \'undefined\') {' +
+      '        len = Infinity;' +
+      '    }' +
+      '    var range = [], end = begin + len;' +
+      '    while (index < end) {' +
+      '        var next = iterator.next();' +
+      '        if (next.done) {' +
+      '            break;' +
+      '        }' +
+      '        if (index >= begin) {' +
+      '            range.push(next.value);' +
+      '        }' +
+      '        index++;' +
+      '    }' +
+      '    return {' +
+      '        range: range,' +
+      '        index: index' +
+      '    };' +
+      '};'+
+      '$__getIteratorRange(IT, 1, 2, 3);'
+    );
+  });
+});
+
 describe('#getGlobals', function() {
   function check(source, globals) {
     assert.deepEqual(
