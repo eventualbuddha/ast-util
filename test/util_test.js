@@ -21,9 +21,13 @@ function normalize(source) {
 
 function processIt(source, callback) {
   var ast = parse(source);
-  types.traverse(ast, function(node) {
-    if (n.Identifier.check(node) && node.name === 'IT') {
-      callback.call(this, node);
+  types.visit(ast, {
+    visitIdentifier: function(path) {
+      if (path.value.name === 'IT') {
+        callback.call(path, path.value);
+        return false;
+      }
+      this.traverse(path);
     }
   });
   return ast;
@@ -209,10 +213,11 @@ describe('#isReference', function() {
   });
 
   it('can check names', function() {
-    types.traverse(parse('a'), function(node) {
-      if (n.Identifier.check(node)) {
-        assert.ok(util.isReference(this, 'a'));
-        assert.ok(!util.isReference(this, 'b'));
+    types.visit(parse('a'), {
+      visitIdentifier: function(path) {
+        assert.ok(util.isReference(path, 'a'));
+        assert.ok(!util.isReference(path, 'b'));
+        return false;
       }
     });
   });
@@ -298,12 +303,12 @@ describe('#injectVariable', function() {
   it('can inject a variable in a scope at a position that is later replaced', function() {
     var ast = parse('var a;');
 
-    types.traverse(ast, function(node) {
-      if (n.VariableDeclaration.check(node)) {
-        util.injectVariable(this.scope, b.identifier('b'));
-        this.replace(b.expressionStatement(
+    types.visit(ast, {
+      visitVariableDeclaration: function(path) {
+        util.injectVariable(path.scope, b.identifier('b'));
+        return b.expressionStatement(
           b.callExpression(b.identifier('replacement'), [])
-        ));
+        );
       }
     });
 
