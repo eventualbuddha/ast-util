@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/square/ast-util.git"
+    "url": "git://github.com/eventualbuddha/ast-util.git"
   },
   "keywords": [
     "ast",
@@ -20,12 +20,12 @@
     "es6",
     "macros"
   ],
-  "author": "Square, Inc.",
+  "author": "Brian Donovan",
   "license": "Apache 2",
   "bugs": {
-    "url": "https://github.com/square/ast-util/issues"
+    "url": "https://github.com/eventualbuddha/ast-util/issues"
   },
-  "homepage": "https://github.com/square/ast-util",
+  "homepage": "https://github.com/eventualbuddha/ast-util",
   "devDependencies": {
     "mocha": "^1.18.2",
     "recast": "^0.6.7",
