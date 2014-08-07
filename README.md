@@ -10,43 +10,43 @@ $ npm install [--save] ast-util
 
 ## API
 
-<a name="callArraySlice" href="#wiki-callArraySlice">#</a> <b>callArraySlice</b>(<i>scope</i>, <i>node</i>[, <i>begin</i>, <i>end</i>])
+<a name="callArraySlice" href="#user-content-callArraySlice">#</a> <b>callArraySlice</b>(<i>scope</i>, <i>node</i>[, <i>begin</i>, <i>end</i>])
 
 Returns a call to `Array.prototype.slice` with `node` as the context and
 `begin` and `end` as the arguments to `slice`.
 
 
-<a name="callFunctionBind" href="#wiki-callFunctionBind">#</a> <b>callFunctionBind</b>(<i>scope</i>, <i>fn</i>, <i>context</i>[, <i>args</i>])
+<a name="callFunctionBind" href="#user-content-callFunctionBind">#</a> <b>callFunctionBind</b>(<i>scope</i>, <i>fn</i>, <i>context</i>[, <i>args</i>])
 
 Returns a call to `Function.prototype.bind` using either `call` or `apply`
 depending on what the value of `args` is. If `args` is an expression then
 `apply` is used. If `args` is an array of expressions, then `call`.
 
 
-<a name="callGet" href="#wiki-callGet">#</a> <b>callGet</b>(<i>scope</i>, <i>object</i>, <i>property</i>, <i>receiver</i>)
+<a name="callGet" href="#user-content-callGet">#</a> <b>callGet</b>(<i>scope</i>, <i>object</i>, <i>property</i>, <i>receiver</i>)
 
 The [[Get]] internal method on objects would look something like
 [helpers/get.js](helpers/get.js).
 
 
-<a name="callGetOwnPropertyDescriptor" href="#wiki-callGetOwnPropertyDescriptor">#</a> <b>callGetOwnPropertyDescriptor</b>(<i>scope</i>, <i>object</i>, <i>property</i>)
+<a name="callGetOwnPropertyDescriptor" href="#user-content-callGetOwnPropertyDescriptor">#</a> <b>callGetOwnPropertyDescriptor</b>(<i>scope</i>, <i>object</i>, <i>property</i>)
 
 Returns a call to `Object.getOwnPropertyDescriptor` with the given `object` and
 `property`.
 
 
-<a name="callGetPrototypeOf" href="#wiki-callGetPrototypeOf">#</a> <b>callGetPrototypeOf</b>(<i>scope</i>, <i>object</i>)
+<a name="callGetPrototypeOf" href="#user-content-callGetPrototypeOf">#</a> <b>callGetPrototypeOf</b>(<i>scope</i>, <i>object</i>)
 
 Returns a call to `Object.getPrototypeOf` with the given `object`.
 
 
-<a name="callHasOwnProperty" href="#wiki-callHasOwnProperty">#</a> <b>callHasOwnProperty</b>(<i>scope</i>, <i>node</i>, <i>property</i>)
+<a name="callHasOwnProperty" href="#user-content-callHasOwnProperty">#</a> <b>callHasOwnProperty</b>(<i>scope</i>, <i>node</i>, <i>property</i>)
 
 Returns a call to `hasOwnProperty` with `node` as the context and `property` as
 the property to check.
 
 
-<a name="callSharedMethod" href="#wiki-callSharedMethod">#</a> <b>callSharedMethod</b>(<i>scope</i>, <i>callee</i>, <i>args</i>)
+<a name="callSharedMethod" href="#user-content-callSharedMethod">#</a> <b>callSharedMethod</b>(<i>scope</i>, <i>callee</i>, <i>args</i>)
 
 Returns a call to the given `callee` with `args` as the arguments. If `callee`
 is a string then it is treated as a globally-accessible function such as
@@ -54,7 +54,7 @@ is a string then it is treated as a globally-accessible function such as
 Subsequent calls to this function will re-use the same temporary variable.
 
 
-<a name="callSharedMethodWithContext" href="#wiki-callSharedMethodWithContext">#</a> <b>callSharedMethodWithContext</b>(<i>scope</i>, <i>callee</i>, <i>context</i>, <i>args</i>)
+<a name="callSharedMethodWithContext" href="#user-content-callSharedMethodWithContext">#</a> <b>callSharedMethodWithContext</b>(<i>scope</i>, <i>callee</i>, <i>context</i>, <i>args</i>)
 
 Returns a call to the given `callee` with `context` as the method context and
 `args` as the arguments. If `callee` is a string then it is treated as a
@@ -63,7 +63,7 @@ stored in a unique temporary variable. Subsequent calls to this function will
 re-use the same temporary variable.
 
 
-<a name="getGlobals" href="#wiki-getGlobals">#</a> <b>getGlobals</b>(<i>ast</i>)
+<a name="getGlobals" href="#user-content-getGlobals">#</a> <b>getGlobals</b>(<i>ast</i>)
 
 Gets a list of identifiers referencing global variables anywhere within the
 given `ast`. Assuming the ast is for this code:
@@ -77,12 +77,12 @@ b(d);
 Then `getGlobals` will return two identifiers, `c` and `a`.
 
 
-<a name="identifierForString" href="#wiki-identifierForString">#</a> <b>identifierForString</b>(<i>string</i>)
+<a name="identifierForString" href="#user-content-identifierForString">#</a> <b>identifierForString</b>(<i>string</i>)
 
 Generate a safe JavaScript identifier for the given string.
 
 
-<a name="injectShared" href="#wiki-injectShared">#</a> <b>injectShared</b>(<i>scope</i>, <i>name</i>, <i>expression</i>)
+<a name="injectShared" href="#user-content-injectShared">#</a> <b>injectShared</b>(<i>scope</i>, <i>name</i>, <i>expression</i>)
 
 Injects a shared variable with a unique identifier. Only the first call with
 the same `scope` and `name` will result in a variable declaration being
@@ -91,13 +91,13 @@ generate one. This function is generally used to inject repeatedly-used values
 and prevent repeated execution.
 
 
-<a name="injectVariable" href="#wiki-injectVariable">#</a> <b>injectVariable</b>(<i>scope</i>, <i>identifier</i>[, <i>init</i>])
+<a name="injectVariable" href="#user-content-injectVariable">#</a> <b>injectVariable</b>(<i>scope</i>, <i>identifier</i>[, <i>init</i>])
 
 Injects a variable with the given `identifier` into the given `scope` as a
 `var` declaration with an optional initial value.
 
 
-<a name="isReference" href="#wiki-isReference">#</a> <b>isReference</b>(<i>path</i>)
+<a name="isReference" href="#user-content-isReference">#</a> <b>isReference</b>(<i>path</i>)
 
 Determines whether the given `path` is a value reference. For example, `a` and
 `b` are references, but `c` is not:
@@ -109,7 +109,7 @@ a(b.c);
 Only identifiers count as references.
 
 
-<a name="isUsed" href="#wiki-isUsed">#</a> <b>isUsed</b>(<i>scope</i>, <i>name</i>)
+<a name="isUsed" href="#user-content-isUsed">#</a> <b>isUsed</b>(<i>scope</i>, <i>name</i>)
 
 Determines whether the given `name` should be considered "used" in the given
 `scope`. For a name to be used, it should either:
@@ -131,7 +131,7 @@ try {
 ```
 
 
-<a name="sharedFor" href="#wiki-sharedFor">#</a> <b>sharedFor</b>(<i>scope</i>, <i>name</i>)
+<a name="sharedFor" href="#user-content-sharedFor">#</a> <b>sharedFor</b>(<i>scope</i>, <i>name</i>)
 
 Injects a shared variable by getting the named value from a dotted path. For
 example, this will return an identifier that can be used in place of the named
@@ -145,7 +145,7 @@ Subsequent calls to `sharedFor` in the same scope will return the same
 identifier.
 
 
-<a name="uniqueIdentifier" href="#wiki-uniqueIdentifier">#</a> <b>uniqueIdentifier</b>(<i>scope</i>[, <i>name</i>])
+<a name="uniqueIdentifier" href="#user-content-uniqueIdentifier">#</a> <b>uniqueIdentifier</b>(<i>scope</i>[, <i>name</i>])
 
 Generates an identifier guaranteed not to collide with any others in the given
 `scope`. This function will also never generate the same identifier twice for
