@@ -3,7 +3,7 @@
 var util = require('../lib');
 
 var recast = require('recast');
-var esprima = require('esprima');
+var esprima = require('esprima-fb');
 var types = recast.types;
 var n = types.namedTypes;
 var b = types.builders;
