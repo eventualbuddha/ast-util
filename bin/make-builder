@@ -304,7 +304,17 @@ var TEST = process.argv.indexOf('--test') >= 0;
 readStdin(function(stdin) {
   var inputSource = stdin;
   var inputAST = recast.parse(inputSource);
-  var code = print(makeBuilder(inputAST.program.body[0].expression, replacements));
+  var body = inputAST.program.body;
+  var ast = inputAST.program;
+
+  if (body.length === 1) {
+    var statement = body[0];
+    // Favor processing just an expression if possible.
+    ast = n.ExpressionStatement.check(statement) ?
+      statement.expression : statement;
+  }
+
+  var code = print(makeBuilder(ast, replacements));
 
   if (TEST) {
     // verify the result
