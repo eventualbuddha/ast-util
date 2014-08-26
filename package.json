@@ -27,12 +27,12 @@
   },
   "homepage": "https://github.com/eventualbuddha/ast-util",
   "devDependencies": {
-    "mocha": "^1.18.2",
-    "recast": "^0.6.7",
+    "mocha": "~1.18.2",
+    "recast": "~0.6.7",
     "esprima": "git://github.com/ariya/esprima.git#harmony"
   },
   "dependencies": {
-    "ast-types": "^0.4.1",
-    "private": "^0.1.5"
+    "ast-types": "~0.4.1",
+    "private": "~0.1.5"
   }
 }
