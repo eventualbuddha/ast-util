@@ -27,12 +27,12 @@
   },
   "homepage": "https://github.com/eventualbuddha/ast-util",
   "devDependencies": {
-    "esprima-fb": "~5001.1.0-dev-harmony-fb",
+    "esprima-fb": "^7001.1.0-dev-harmony-fb",
     "mocha": "~1.18.2",
-    "recast": "~0.6.7"
+    "recast": "~0.8.1"
   },
   "dependencies": {
-    "ast-types": "~0.4.9",
+    "ast-types": "~0.5.1",
     "private": "~0.1.5"
   }
 }
