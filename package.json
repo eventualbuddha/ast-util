@@ -29,10 +29,10 @@
   "devDependencies": {
     "esprima-fb": "^7001.1.0-dev-harmony-fb",
     "mocha": "~1.18.2",
-    "recast": "~0.8.1"
+    "recast": "~0.8.0"
   },
   "dependencies": {
-    "ast-types": "~0.5.1",
+    "ast-types": "~0.5.2",
     "private": "~0.1.5"
   }
 }
