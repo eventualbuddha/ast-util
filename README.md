@@ -74,7 +74,7 @@ function b(){ return c; }
 b(d);
 ```
 
-Then `getGlobals` will return two identifiers, `c` and `a`.
+Then `getGlobals` will return two identifiers, `c` and `d`.
 
 
 <a name="identifierForString" href="#user-content-identifierForString">#</a> <b>identifierForString</b>(<i>string</i>)
