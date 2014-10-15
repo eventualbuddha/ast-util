@@ -32,7 +32,7 @@
     "recast": "~0.8.0"
   },
   "dependencies": {
-    "ast-types": "~0.5.2",
+    "ast-types": "~0.5.3",
     "private": "~0.1.5"
   }
 }
