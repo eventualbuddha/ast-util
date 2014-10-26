@@ -297,7 +297,7 @@ describe('#injectVariable', function() {
       );
     });
 
-    sameSource(ast,'var hasOwnProp = Object.prototype.hasOwnProperty; IT;');
+    sameSource(ast, 'var hasOwnProp = Object.prototype.hasOwnProperty; IT;');
   });
 
   it('can inject a variable in a scope at a position that is later replaced', function() {
@@ -316,6 +316,30 @@ describe('#injectVariable', function() {
       ast,
       'var b; replacement();'
     );
+  });
+
+  it('injects after any global "use strict" pragma', function() {
+    var ast = processIt('"use strict"; IT;', function() {
+      util.injectVariable(
+        this.scope,
+        b.identifier('a'),
+        b.literal(1)
+      )
+    });
+
+    sameSource(ast, '"use strict"; var a = 1; IT;');
+  });
+
+  it('injects after any local "use strict" pragma', function() {
+    var ast = processIt('function getIt() { "use strict"; return IT; }', function() {
+      util.injectVariable(
+        this.scope,
+        b.identifier('a'),
+        b.literal(1)
+      )
+    });
+
+    sameSource(ast, 'function getIt() { "use strict"; var a = 1; return IT; }');
   });
 });
 
