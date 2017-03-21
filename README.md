@@ -1,5 +1,7 @@
 # ast-util
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/eventualbuddha/ast-util.svg)](https://greenkeeper.io/)
+
 Utilities for AST transformers.
 
 ## Install
