@@ -27,11 +27,11 @@
   },
   "homepage": "https://github.com/eventualbuddha/ast-util",
   "devDependencies": {
-    "mocha": "~2.1.0",
-    "recast": "~0.9.11"
+    "mocha": "~3.2.0",
+    "recast": "~0.12.2"
   },
   "dependencies": {
-    "ast-types": "~0.6.7",
+    "ast-types": "~0.9.10",
     "private": "~0.1.6"
   }
 }
